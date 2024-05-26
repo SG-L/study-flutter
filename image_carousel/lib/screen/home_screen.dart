@@ -1,8 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async'; // async 패키지
 
-class HomeScreen extends StatelessWidget {
+// StatefulWidget 정의
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+// _HomeScreenState 정의
+class _HomeScreenState extends State<HomeScreen> {
+  // PageController 생성
+  final PageController pageController = PageController();
+  
+  // initState() 함수 등록
+  @override
+  void initState() {
+    super.initState(); // 부모 initState() 실행
+
+    Timer.periodic( // Timer.periodic() 등록
+      Duration(seconds: 3),
+      (timer) {
+        // 현재 페이지 가져오기
+        int? nextPage = pageController.page?.toInt();
+
+        if (nextPage == null) { // 페이지 값이 없을 때 예외 처리
+          return;
+        }
+        if (nextPage == 4) { // 첫 페이지와 마지막 페이지 분기 처리
+          nextPage = 0;
+        } else {
+          nextPage++;
+        }
+        pageController.animateToPage( // 페이지 변경
+          nextPage,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +51,7 @@ class HomeScreen extends StatelessWidget {
       // 여러 개의 위젯을 독단적인 페이지로 생성하고
       // 가로 또는 세로 스와이프로 페이지를 넘길 수 있게 하는 위젯
       body: PageView(
+        controller: pageController, // PageController 등록
         children: [1, 2, 3, 4, 5].map((number)=>
             Image.asset(
               'asset/img/image_$number.jpeg',
